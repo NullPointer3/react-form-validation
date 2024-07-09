@@ -10,13 +10,19 @@ const Form = () => {
   const [fieldErrors, setFieldErrors] = useState({})
 
   const onFormSubmit = evt => {
-    const ppl = [...people, inputFields]
-    setPeople(ppl)
+    const ppl = [...people]
+    const person = inputFields
+    const fieldErrors = validate(person)
+    setFieldErrors( fieldErrors )
+    evt.preventDefault()
+
+    if(Object.keys(fieldErrors).length) return
+
+    setPeople(ppl.concat(person))
     setInputFields({
       name: '',
       email: ''
     })
-    evt.preventDefault()
   }
 
   const onInputChange = evt => {
@@ -47,6 +53,9 @@ const Form = () => {
           value={inputFields.name}
           onChange={onInputChange}
         />
+        <span className='text-red-700'>
+          {fieldErrors.name}
+        </span>
       </div>
       <div>
         <input
@@ -55,6 +64,9 @@ const Form = () => {
           value={inputFields.email}
           onChange={onInputChange}
         />
+        <span className='text-red-700'>
+          {fieldErrors.email}
+        </span>
       </div>
       <input type="submit"  />
     </form>
