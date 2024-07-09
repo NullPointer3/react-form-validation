@@ -1,60 +1,75 @@
 import React, { useState } from 'react'
+import isEmail from 'validator/lib/isEmail'
 
 const Form = () => {
-  const [inputFields, setInputFields] = useState({ name: '', email: '' })
+  const [inputFields, setInputFields] = useState({
+    name: '',
+    email: ''
+  })
   const [people, setPeople] = useState([])
+  const [fieldErrors, setFieldErrors] = useState({})
 
   const onFormSubmit = evt => {
-    const peop = [ ...people, inputFields]
-    setPeople(peop)
-    setInputFields({name:'', email:''})
+    const ppl = [...people, inputFields]
+    setPeople(ppl)
+    setInputFields({
+      name: '',
+      email: ''
+    })
     evt.preventDefault()
   }
+
   const onInputChange = evt => {
-    const fields = Object.assign({}, inputFields)
-    fields[evt.target.name] = evt.target.value
-    setInputFields(fields)
+    const { name, value } = evt.target
+    setInputFields(prev => ({
+      ...prev,
+      [name]: value
+    }))
+  }
+
+  const validate = person => {
+    const errors = {}
+    if(!person.name) errors.name = 'Name Required'
+    if(!person.email) errors.email = "Email Required"
+    if(person.email && !isEmail(person.email)) errors.email = 'Invalid Email'
+    return errors
   }
   return (
-    <div>
-      <h1>Sign Up Sheet</h1>
-      <form
-        onSubmit={onFormSubmit}
-      >
-        <div>
-          <input 
-            type="text"
-            name='name'
-            placeholder='Name'
-            value={inputFields.name}
-            onChange={onInputChange}
-          />
-        </div>
-        <div>
-          <input 
-            type="text"
-            name='email'
-            placeholder='Email' 
-            value={inputFields.email}
-            onChange={onInputChange}
-          />
-        </div>
-        <div>
-          <input 
-            type="submit" 
-          />
-        </div>
-      </form>
-
+   <main>
+    <form 
+      action="#"
+      onSubmit={onFormSubmit}
+    >
       <div>
-        <h2>people</h2>
-        <ul>
-          {people.map(({name,email}, i) => (
-            <li key={i}>{name} ({email})</li>
-          ))}
-        </ul>
+        <input
+          name='name'
+          placeholder='Name'
+          value={inputFields.name}
+          onChange={onInputChange}
+        />
       </div>
+      <div>
+        <input
+          name='email'
+          placeholder='Email'
+          value={inputFields.email}
+          onChange={onInputChange}
+        />
+      </div>
+      <input type="submit"  />
+    </form>
+
+    <div>
+      <h1>People</h1>
+      <ul>
+        { people.map((person, i) => (
+          <li key={i}>
+            {person.name} ({person.email})
+          </li>
+        ))}
+      </ul>
     </div>
+   </main>
   )
 }
 
